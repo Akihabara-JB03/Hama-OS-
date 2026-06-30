@@ -1,35 +1,88 @@
-name: Build Hama OS
+bits 16
+org 0x7C00
 
-on:
-  push:
-    branches: [ "main" ]
+_start:
+    cli
+    xor ax, ax
+    mov ds, ax
+    mov es, ax
+    mov ss, ax
+    mov sp, 0x7C00
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+    mov ax, 0x0000
+    mov es, ax
+    mov bx, 0x7E00
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    mov cx, 0x0002
+    mov dh, 0
+    mov si, 100
 
-    # 👈「絶対に途中で質問を出して固まるな」という最強の命令を追加
-    - name: Install NASM and GCC
-      env:
-        DEBIAN_FRONTEND: noninteractive
-      run: |
-        sudo apt-get update -y
-        sudo apt-get install -y --no-install-recommends nasm gcc
+.load_loop:
+    cmp si, 0
+    jle .load_end
 
-    - name: Compile and Physical Link (512 Bytes Boot Sector Method)
-      run: |
-        nasm -f bin boot.asm -o boot.bin
-        gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 kernel.c -o kernel.o
-        gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 str.c -o str.o
-        ld -m elf_i386 -Ttext 0x7E00 --oformat binary kernel.o str.o -o kernel.bin
-        cat boot.bin kernel.bin > os.img
+    mov ah, 0x02
+    mov al, 1
+    int 0x13
+    jc .error
 
-    - name: Upload Hama OS Image
-      uses: actions/upload-artifact@v4
-      with:
-        name: HamaOS-Disk-Image
-        path: os.img
+    add bx, 0x0200
+    dec si
+
+    inc cl
+    cmp cl, 19
+    jl .load_loop
+
+    mov cl, 1
+    inc dh
+    cmp dh, 2
+    jl .load_loop
+
+    mov dh, 0
+    inc ch
+    jmp .load_loop
+
+.error:
+    mov ax, 0x0B800
+    mov es, ax
+    mov word [es:0], 0x4F45
+    jmp $
+
+.load_end:
+    in al, 0x92
+    or al, 2
+    out 0x92, al
+
+    lgdt [gdt_descriptor]
+
+    mov eax, cr0
+    or eax, 1
+    mov cr0, eax
+
+    jmp 0x08:init_32bit
+
+bits 32
+init_32bit:
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+    mov esp, 0x90000
+
+    jmp 0x08:0x7E00
+
+align 4
+gdt_start:
+    dd 0x00000000, 0x00000000
+    dw 0xFFFF, 0x0000, 0x9A00, 0x00CF
+    dw 0xFFFF, 0x0000, 0x9200, 0x00CF
+gdt_end:
+
+gdt_descriptor:
+    dw gdt_end - gdt_start - 1
+    dd gdt_start
+
+times 510-($-$$) db 0
+dw 0xAA55
