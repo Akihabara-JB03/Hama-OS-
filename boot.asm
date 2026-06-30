@@ -37,9 +37,9 @@ init_32bit:
     mov ss, ax
     mov esp, 0x90000 ; カーネル用スタックポインタ
 
-    ; 6. C言語カーネルの実行（catで結合したkernel_mainへ）
-    extern kernel_main
-    call kernel_main
+    ; 6. C言語カーネルへのジャンプ
+    ; 512バイト（0x200）後ろの 0x7E00 番地に配置された kernel_main へ直接突っ込みます
+    jmp 0x08:0x7E00
 
 .halt:
     hlt
