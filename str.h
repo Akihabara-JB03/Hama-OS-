@@ -6,8 +6,5 @@
 // 先ほど自作した strlen 関数の説明書（末尾にセミコロンを付ける）
 int stlen(char* str);
 
-// キーボード制御に使う入出力関数の説明書
-unsigned char inb(unsigned short port);
-void outb(unsigned short port, unsigned char value);
 
 #endif // 【おまじない③】おまじないの終わり
