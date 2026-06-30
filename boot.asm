@@ -37,7 +37,7 @@ init_32bit:
     mov ss, ax
     mov esp, 0x90000 ; カーネル用スタックポインタ
 
-    ; 6. D言語カーネルの実行（リンカで結合したkernel_mainへ）
+    ; 6. C言語カーネルの実行（catで結合したkernel_mainへ）
     extern kernel_main
     call kernel_main
 
@@ -48,11 +48,23 @@ init_32bit:
 ; --- GDT (グローバル記述子テーブル) ---
 align 4
 gdt_start:
-    dd 0x00000000, 0x00000000 ; ヌル
+    dd 0x00000000, 0x00000000 ; ヌル記述子
+
     ; コードセグメント (0x08): Base=0, Limit=4GB
-    dw 0xFFFF, 0x0000 \ db 0x00, 0x9A, 0xCF, 0x00
+    dw 0xFFFF
+    dw 0x0000
+    db 0x00
+    db 0x9A
+    db 0xCF
+    db 0x00
+
     ; データセグメント (0x10): Base=0, Limit=4GB
-    dw 0xFFFF, 0x0000 \ db 0x00, 0x92, 0xCF, 0x00
+    dw 0xFFFF
+    dw 0x0000
+    db 0x00
+    db 0x92
+    db 0xCF
+    db 0x00
 gdt_end:
 
 gdt_descriptor:
