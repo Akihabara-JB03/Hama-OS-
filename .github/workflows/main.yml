@@ -1,0 +1,32 @@
+name: Build Hama OS
+
+on:
+  push:
+    branches: [ "main" ] # mainブランチにファイルが保存されたら自動スタート
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 1. OSビルドに絶対必要なツール（gccやnasm）を自動インストール
+    - name: Install NASM and GCC
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y nasm gcc make
+
+    # 2. 自動で Makefile を実行して、boot.asm と kernel.c を合体させる
+    - name: Run Make Build
+      run: make
+
+    # 3. 成功したら、完成した「os.img」をGitHubからダウンロードできるようにする
+    - name: Upload Hama OS Image
+      uses: actions/upload-artifact@v4
+      with:
+        name: HamaOS-Disk-Image
+        path: os.img
