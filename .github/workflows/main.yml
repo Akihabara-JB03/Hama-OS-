@@ -15,15 +15,22 @@ jobs:
     - name: Install NASM and GCC
       run: |
         sudo apt-get update
-        sudo apt-get install -y nasm gcc make
+        sudo apt-get install -y nasm gcc
 
-    # 👈 Makefileを使わず、Actionsが直接あなたのソースコードをビルドします！
-    - name: Compile and Link Hama OS
+    - name: Compile and Physical Link (512 Bytes Boot Sector Method)
       run: |
-        nasm -f elf32 boot.asm -o boot.o
+        # 1. boot.asm を直接「本物の512バイトのブートセクタバイナリ」として出力
+        nasm -f bin boot.asm -o boot.bin
+        
+        # 2. C言語カーネルをオブジェクトファイル化
         gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 kernel.c -o kernel.o
         gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 str.c -o str.o
-        ld -m elf_i386 -T linker.ld boot.o kernel.o str.o -o os.img
+        
+        # 3. カーネルのコードを、ブートセクタの直後（0x7C00 + 512 = 0x7E00 番地）に配置するRawバイナリとしてリンク
+        ld -m elf_i386 -Ttext 0x7E00 --oformat binary kernel.o str.o -o kernel.bin
+        
+        # 4. 512バイトのブートセクタと、後ろに続くカーネルバイナリを物理的にガッチャンコ！
+        cat boot.bin kernel.bin > os.img
 
     - name: Upload Hama OS Image
       uses: actions/upload-artifact@v4
