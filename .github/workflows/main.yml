@@ -2,8 +2,6 @@ name: Build Hama OS
 
 on:
   push:
-    branches: [ "main" ] # mainブランチにファイルが保存されたら自動スタート
-  pull_request:
     branches: [ "main" ]
 
 jobs:
@@ -14,17 +12,19 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 1. OSビルドに絶対必要なツール（gccやnasm）を自動インストール
     - name: Install NASM and GCC
       run: |
         sudo apt-get update
         sudo apt-get install -y nasm gcc make
 
-    # 2. 自動で Makefile を実行して、boot.asm と kernel.c を合体させる
-    - name: Run Make Build
-      run: make
+    # 👈 Makefileを使わず、Actionsが直接あなたのソースコードをビルドします！
+    - name: Compile and Link Hama OS
+      run: |
+        nasm -f elf32 boot.asm -o boot.o
+        gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 kernel.c -o kernel.o
+        gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 str.c -o str.o
+        ld -m elf_i386 -T linker.ld boot.o kernel.o str.o -o os.img
 
-    # 3. 成功したら、完成した「os.img」をGitHubからダウンロードできるようにする
     - name: Upload Hama OS Image
       uses: actions/upload-artifact@v4
       with:
