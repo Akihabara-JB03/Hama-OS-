@@ -26,6 +26,7 @@ jobs:
         gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 kernel.c -o kernel.o
         gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 str.c -o str.o
         ld -m elf_i386 -Ttext 0x7E00 --oformat binary kernel.o str.o -o kernel.bin
+        truncate -s 4608 kernel.bin
         cat boot.bin kernel.bin > os.img
 
     - name: Upload Hama OS Image
