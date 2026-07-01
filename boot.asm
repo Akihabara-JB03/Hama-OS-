@@ -15,7 +15,7 @@ _start:
 
     mov cx, 0x0002
     mov dh, 0
-    mov si, 100
+    mov si, 10
 
 .load_loop:
     cmp si, 0
