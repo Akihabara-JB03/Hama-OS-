@@ -12,7 +12,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 👈「絶対に途中で質問を出して固まるな」という最強の命令を追加
     - name: Install NASM and GCC
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -25,7 +24,8 @@ jobs:
         nasm -f bin boot.asm -o boot.bin
         gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 kernel.c -o kernel.o
         gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 str.c -o str.o
-        ld -m elf_i386 -Ttext 0x7E00 --oformat binary kernel.o str.o -o kernel.bin
+        gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 io.c -o io.o
+        ld -m elf_i386 -Ttext 0x7E00 --oformat binary kernel.o str.o io.o -o kernel.bin
         truncate -s 4608 kernel.bin
         cat boot.bin kernel.bin > os.img
 
