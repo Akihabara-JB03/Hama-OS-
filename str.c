@@ -32,7 +32,7 @@ char *H_strcpy(char *src, char *dst) {
 
 char *H_strcat(char *src,char *dst,int n) {
     int k = 0;
-    int pos = strlen(dst);
+    int pos = stlen(dst);
     while (src[k] != '\0') {
         if ((pos + k) < n) {
             dst[pos+k] = src[k];
