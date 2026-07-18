@@ -26,5 +26,3 @@ void clear() {
   cursor_x = 0;
   cursor_y = 0;
 }
-
-}
