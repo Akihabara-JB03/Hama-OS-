@@ -1,10 +1,9 @@
-#ifndef KERNEL_H  // 【おまじない①】もし KERNEL_H がまだ登録されていなければ
-#define KERNEL_H  // 【おまじない②】KERNEL_H を登録する！
+#ifndef STR_H
+#define STR_H
 
-// --- ここに関数の「説明書（プロトタイプ宣言）」を書く ---
-
-// 先ほど自作した strlen 関数の説明書（末尾にセミコロンを付ける）
 int stlen(char* str);
+int H_strcmp(char *a, char *b);
+char *H_strcpy(char *src, char *dst);
+char *H_strcat(char *src, char *dst, int n);
 
-
-#endif // 【おまじない③】おまじないの終わり
+#endif
