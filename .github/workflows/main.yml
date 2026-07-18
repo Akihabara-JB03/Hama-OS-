@@ -26,7 +26,9 @@ jobs:
         gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 str.c -o str.o
         gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 io.c -o io.o
         ld -m elf_i386 -Ttext 0x7E00 --oformat binary kernel.o str.o io.o -o kernel.bin
-        truncate -s 4608 kernel.bin
+        # os.img の後ろにゼロを詰めて、サイズを少し大きく（例: 20セクタ分の 10240 バイトに）広げる
+        truncate -s 10240 os.img
+
         cat boot.bin kernel.bin > os.img
 
     - name: Upload Hama OS Image
