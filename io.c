@@ -1,9 +1,9 @@
 #include "str.h"
+int cursor_x = 0;
+int cursor_y = 0;
 void print(char* str) {
   unsigned char* video = (unsigned char*)0xb8000;
   int mozinagasa = stlen(str);
-  int cursor_x = 0;
-  int cursor_y = 0;
   for (int i = 0; i<mozinagasa; i++) {
     if (cursor_x == 80) {
       cursor_y++;
@@ -15,4 +15,16 @@ void print(char* str) {
       cursor_x++;
     }
   }
+}
+void clear() {
+
+  for (int i = 0; i < 2000; i++) {
+    // 💡ここに、スペース「" "」を1個画面に出す処理を書く！
+    print(" ");
+  } 
+  // 💡画面を全部スペースで埋めたあと、次の文字のためにカーソルを一番上に戻す処理を書く！
+  cursor_x = 0;
+  cursor_y = 0;
+}
+
 }
