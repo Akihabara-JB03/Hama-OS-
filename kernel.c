@@ -41,8 +41,10 @@ void keyboard_handler_main(void) {
                 execute_command();
             }
             // エンターじゃなくて、普通の文字だったら画面に出す
-            char str[2] = {ascii, '\0'};
-            print(str);
+            else {
+                char str[2] = {ascii, '\0'};
+                print(str);
+            }
         }
     }
     out8(0x20, 0x20);
@@ -55,7 +57,6 @@ void kernel_main() {
 
     while (1) {
         // 無限ループで待機
-        keyboard_handler_main();
     }
 }
 m
