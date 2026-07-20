@@ -28,5 +28,5 @@ void clear() {
 }
 char current_char(int x,int y) {
   unsigned char* video = (unsigned char*)0xb8000;
-  return video[(y*80+x)*2]
+  return video[(y*80+x)*2];
 }
