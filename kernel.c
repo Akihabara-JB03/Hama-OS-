@@ -1,5 +1,7 @@
 #include "io.h"
 #include　"keyboard.h"
+#include "str.h"
+
 void kernel_main() {
     clear();
     print("HAMA OS [VER 0.01.2] HELLO WORLD");
