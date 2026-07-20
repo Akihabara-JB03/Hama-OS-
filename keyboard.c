@@ -1,4 +1,3 @@
-#include "interrupt.h"
 #include "io.h"
 
 // IDTテーブルの実体（256個の割り込みに対応）
