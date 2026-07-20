@@ -25,7 +25,8 @@ jobs:
         gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 kernel.c -o kernel.o
         gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 str.c -o str.o
         gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 io.c -o io.o
-        ld -m elf_i386 -Ttext 0x7E00 --oformat binary kernel.o str.o io.o -o kernel.bin
+        gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 keyboard.c -o keyboard.o
+        ld -m elf_i386 -Ttext 0x7E00 --oformat binary kernel.o str.o io.o keyboard.o -o kernel.bin
         cat boot.bin kernel.bin > os.img
         truncate -s 10240 os.img
 
