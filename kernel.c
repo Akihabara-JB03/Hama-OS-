@@ -59,4 +59,3 @@ void kernel_main() {
         // 無限ループで待機
     }
 }
-m
