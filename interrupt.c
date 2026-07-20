@@ -6,19 +6,19 @@ struct IDTEntry idt[256];
 struct IDTR idtr;
 
 // CPUのポートに1バイト書き込む関数
-static inline void out8(unsigned short port, unsigned char data) {
+inline void out8(unsigned short port, unsigned char data) {
     __asm__ __volatile__("outb %0, %1" : : "a"(data), "Nd"(port));
 }
 
 // CPUのポートから1バイト読み込む関数
-static inline unsigned char in8(unsigned short port) {
+inline unsigned char in8(unsigned short port) {
     unsigned char data;
     __asm__ __volatile__("inb %1, %0" : "=a"(data) : "Nd"(port));
     return data;
 }
 
 // スキャンコードをASCIIに変換する本物のテーブル
-static const char scan_to_ascii[256] = {
+const char scan_to_ascii[256] = {
     0,  27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b',
     '\t', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',
     0,   'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`', 0,
