@@ -16,7 +16,18 @@ struct IDTR {
     unsigned int   base;
 } __attribute__((packed));
 
-// 外部から呼ぶための初期化関数
+// ----------------------------------------------------
+// 【新規追加】他のCファイル（kernel.c等）に存在を教えるための宣言
+// ----------------------------------------------------
+
+// 外部から呼ぶための初期化・制御関数
 void init_interrupts(void);
+void out8(unsigned short port, unsigned char data);
+unsigned char in8(unsigned short port);
+void keyboard_handler_main(void);
+
+// グローバル配列と変数の共有宣言（実体は別ファイルにあることを伝える）
+extern const char scan_to_ascii[256];
+extern int cursor_y; 
 
 #endif
