@@ -36,8 +36,11 @@ jobs:
         ld -m elf_i386 -Ttext 0x7E00 --oformat binary installer.o str.o io.o keyboard.o -o installer.bin
         
         # 5. 💡 インストーラー用のパーツ同士を合体させてイメージ化
+        # main.yml の中身をこのように修正
         cat boot_installer.bin installer.bin > installer.img
-        truncate -s 10240 installer.img
+        
+        # 💡 10240（10KiB）じゃなくて、33554432（ぴったり32MB）に引き伸ばす！
+        truncate -s 33554432 installer.img
 
     # 6. 配布用の installer.img のみを Artifact としてアップロード
     - name: Upload Hama OS Installer Image
