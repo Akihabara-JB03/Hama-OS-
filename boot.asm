@@ -34,7 +34,7 @@ _start:
     dec si                  ; 残りセクタ数を減らす
 
     inc cl
-    cmp cl, 19
+    cmp cl, 64
     jl .load_loop
 
     mov cl, 1
