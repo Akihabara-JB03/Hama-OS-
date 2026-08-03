@@ -30,7 +30,9 @@ jobs:
         gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 keyboard.c -o keyboard.o
 
         # 3. インストーラー用のメイン処理をコンパイル
-        gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 installer.c -o installer.o
+        # main.yml のここを -O0 に変える
+        gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O0 installer.c -o installer.o
+
         
         # 4. 結合してインスローラ用のカーネルバイナリを作成
         ld -m elf_i386 -Ttext 0x7E00 --oformat binary installer.o str.o io.o keyboard.o -o installer.bin
