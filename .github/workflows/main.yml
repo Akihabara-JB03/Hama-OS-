@@ -1,4 +1,4 @@
-name: Build Hama OS
+name: Build Hama OS Installer
 
 on:
   push:
@@ -19,19 +19,29 @@ jobs:
         sudo apt-get update -y
         sudo apt-get install -y --no-install-recommends nasm gcc
 
-    - name: Compile and Physical Link (512 Bytes Boot Sector Method)
+    - name: Compile and Link Installer Image
       run: |
-        nasm -f bin boot.asm -o boot.bin
-        gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 kernel.c -o kernel.o
+        # 1. 💡 新しいインストーラー専用アセンブラ（boot_installer.asm）をビルド！
+        nasm -f bin boot_installer.asm -o boot_installer.bin
+        
+        # 2. 共通のC言語ソースファイルをコンパイル
         gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 str.c -o str.o
         gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 io.c -o io.o
         gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 keyboard.c -o keyboard.o
-        ld -m elf_i386 -Ttext 0x7E00 --oformat binary kernel.o str.o io.o keyboard.o -o kernel.bin
-        cat boot.bin kernel.bin > os.img
-        truncate -s 10240 os.img
 
-    - name: Upload Hama OS Image
+        # 3. インストーラー用のメイン処理をコンパイル
+        gcc -m32 -c -fno-pie -fno-stack-protector -nostdlib -fno-builtin -O2 installer.c -o installer.o
+        
+        # 4. 結合してインスローラ用のカーネルバイナリを作成
+        ld -m elf_i386 -Ttext 0x7E00 --oformat binary installer.o str.o io.o keyboard.o -o installer.bin
+        
+        # 5. 💡 インストーラー用のパーツ同士を合体させてイメージ化
+        cat boot_installer.bin installer.bin > installer.img
+        truncate -s 10240 installer.img
+
+    # 6. 配布用の installer.img のみを Artifact としてアップロード
+    - name: Upload Hama OS Installer Image
       uses: actions/upload-artifact@v4
       with:
-        name: HamaOS-Disk-Image
-        path: os.img
+        name: HamaOS-Installer-Image
+        path: installer.img
