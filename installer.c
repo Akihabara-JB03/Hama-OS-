@@ -132,3 +132,11 @@ void run_hama_os_installer() {
     
     draw_bottom_bar(" Installation Finished! ");
 }
+void kernel_main(void)
+{
+    run_hama_os_installer();
+
+    for (;;)
+    {
+    }
+}
